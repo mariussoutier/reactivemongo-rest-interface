@@ -6,7 +6,7 @@ resolvers += "Sonatype Snapshots" at "http://oss.sonatype.org/content/repositori
 
 libraryDependencies ++= Seq(
   cache,
-  "org.reactivemongo" %% "reactivemongo" % "0.10.0-SNAPSHOT"
+  "org.reactivemongo" %% "play2-reactivemongo" % "0.10.0-SNAPSHOT"
 )
 
 play.Project.playScalaSettings

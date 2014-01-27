@@ -19,7 +19,7 @@ mongoREST {
   }
   cors {
     enabled=true
-    servers=["http://www.yourclientsideapp.com"]
+    origin="http://www.yourclientsideapp.com"
   }
 }
 ```
@@ -27,7 +27,9 @@ mongoREST {
 Generic REST interface
 ----------------------
 
-To enable a full REST service supporting insert and update, leave the simpleProxy on disabled and
+`Under development`
+
+To enable a full REST service supporting insert and update, leave the `simpleProxy` disabled and
 set the mongoUri to your MongoDB server(s).
 
 ```bash

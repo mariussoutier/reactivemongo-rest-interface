@@ -4,7 +4,6 @@ import controllers._
 
 object Global extends play.api.GlobalSettings with CurrentApp {
 
-  /** Override this method to  */
   override def getControllerInstance[A](controllerClass: Class[A]): A = {
     lookUpOrThrowUp(controllerClass)
   }
