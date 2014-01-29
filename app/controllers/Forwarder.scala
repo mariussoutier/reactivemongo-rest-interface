@@ -7,23 +7,14 @@ import play.api._
 import play.api.mvc._
 import play.api.libs.ws.{ WS, Response }
 import play.api.libs.ws.WS._
+import play.api.libs.json._
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 /**
  * Forwards a request to the MongoDB REST service
  */
-class Forwarder extends MongoFwdDelegate with CurrentApp {
-
-  /** Add CORS headers */
-  val extraHeaders: Seq[(String, String)] = {
-    var headers = collection.mutable.ArrayBuffer[(String, String)]()
-    if (Play.configuration.getBoolean("mongoREST.cors.enabled").exists(_ == true)) {
-      val allowedOrigin = Play.configuration.getString("mongoREST.cors.origin")
-      headers += "Access-Control-Allow-Origin" -> allowedOrigin.getOrElse("*")
-    }
-    headers.toSeq
-  }
+class Forwarder extends MongoFwdDelegate with CurrentApp with CorsHeaders {
 
   /** Keep the original headers */
   def responseHeaders(response: Response): Seq[(String, String)] = {
@@ -38,14 +29,18 @@ class Forwarder extends MongoFwdDelegate with CurrentApp {
     .getString("mongoREST.simpleProxy.forwardTo")
     .getOrElse("http://localhost:28017")
 
-  def forwardToMongo(path: String) = Action.async(BodyParsers.parse.empty) { request =>
+  def find(path: String) = Action.async(BodyParsers.parse.empty) { request =>
     val forwardToCleansed =
       if (forwardTo.endsWith("/")) forwardTo.dropRight(1)
       else forwardTo
     WS.url(s"$forwardToCleansed/$path").get() map { response =>
       Results.Ok(response.body)
         .withHeaders(responseHeaders(response): _*)
-        .withHeaders(extraHeaders: _*)
+        .withHeaders(corsHeaders: _*)
     }
+  }
+
+  def remove(path: String) = Action { _ =>
+    Results.BadRequest(Json.obj("err" -> "MongoDB REST service does not support DELETE"))
   }
 }

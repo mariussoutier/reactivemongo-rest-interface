@@ -2,5 +2,9 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
+# Static
 GET     /                           @controllers.MongoFwd.index
-GET     /*path                      @controllers.MongoFwd.forwardToMongo(path)
+GET     /favicon.ico                controllers.Assets.at(path="/public", file="favicon.ico")
+# REST calls
+GET     /*path                      @controllers.MongoFwd.find(path)
+DELETE  /*path                      @controllers.MongoFwd.remove(path)

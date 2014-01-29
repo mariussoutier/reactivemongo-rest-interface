@@ -39,6 +39,42 @@ mongoREST {
 }
 ```
 
+### Find
+
+To fetch all elements in a collection, you issue a command similar to MongoDB's default REST
+interface:
+
+`GET /myDatabase/users`
+
+You can filter the result by adding parameters in the form `query=<key>:<value`.
+
+`GET /myDatabase/users?query=lastName:Smith&query=firstName:John`
+
+This also works with the dot-notation to match sub-documents:
+
+`GET /myDatabase/users?query=name.lastName:Smith&query=name.firstName:John`
+
+If you use ObjectIds, surround the id with `ObjectId()`:
+
+`GET /myDatabase/users?query=bossId:ObjectId(528dcd062f79c2ff911e3434)`
+
+### Find One by Id
+
+To access one entry with a given `_id`, add the id to the route:
+
+`GET /myDatabase/users/1234`
+
+If you use ObjectIds, surround the id with `ObjectId()`:
+
+`GET /myDatabase/users/ObjectId(528dcd062f79c2ff911e3434)`
+
+### Remove
+
+To delete one entry with a given `_id`, add the id to the route:
+
+`DELETE /myDatabase/users/ObjectId(528dcd062f79c2ff911e3434)`
+
+
 Deployment
 ----------
 
