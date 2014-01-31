@@ -8,3 +8,5 @@ GET     /favicon.ico                controllers.Assets.at(path="/public", file="
 # REST calls
 GET     /*path                      @controllers.MongoFwd.find(path)
 DELETE  /*path                      @controllers.MongoFwd.remove(path)
+PUT     /*path                      @controllers.MongoFwd.update(path)
+POST    /*path                      @controllers.MongoFwd.insert(path)

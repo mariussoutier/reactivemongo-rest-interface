@@ -29,7 +29,7 @@ class MongoRest extends MongoFwdDelegate with CurrentApp with CorsHeaders {
 
   val mongoUri: List[String] = Play.configuration
     .getStringList("mongoREST.mongodb.servers").map(_.asScala.toList)
-    .getOrElse(List[String]("mongodb://localhost:27017"))
+    .getOrElse(List("mongodb://localhost:27017"))
   val driver = new MongoDriver
   val connection = driver.connection(mongoUri)
 
@@ -57,6 +57,21 @@ class MongoRest extends MongoFwdDelegate with CurrentApp with CorsHeaders {
         Results.Ok(Json.toJson(lastError)).as(ContentTypes.JSON)
       }
       case _ => badRequestAsync("Id is missing")
+    }
+  }
+
+  def update(ignore: String) = Action.async(BodyParsers.parse.json) { request =>
+    extractId(request.path) match {
+      case Some(id) => updateOne(id, extractNamespace(request.path), request.body) map { lastError =>
+        Results.Ok(Json.toJson(lastError)).as(ContentTypes.JSON)
+      }
+      case _ => badRequestAsync("Id is missing")
+    }
+  }
+
+  def insert(ignore: String) = Action.async(BodyParsers.parse.json) { request =>
+    insertOne(extractNamespace(request.path), request.body) map { lastError =>
+      Results.Ok(Json.toJson(lastError)).as(ContentTypes.JSON)
     }
   }
 
@@ -97,7 +112,7 @@ class MongoRest extends MongoFwdDelegate with CurrentApp with CorsHeaders {
 
   /**
    * Parse a String and try to guess the right Json value.
-   * oid: prefix will be parsed to an ObjectId.
+   * objectid() will be parsed to an ObjectId.
    */
   def parseValueToJson(string: String): JsValue = string match {
     case "true" => JsBoolean(true)
@@ -155,6 +170,22 @@ class MongoRest extends MongoFwdDelegate with CurrentApp with CorsHeaders {
     val collection = db.collection[JSONCollection](collectionName)
     val query = Json.obj("_id" -> parseValueToJson(id))
     collection.remove(query, firstMatchOnly = true)
+  }
+
+  def updateOne(id: String, ns: Namespace, data: JsValue): Future[LastError] = {
+    Logger.debug(s"Updating $id")
+    val (dbName, collectionName) = ns
+    val db = connection(dbName)
+    val collection = db.collection[JSONCollection](collectionName)
+    collection.update(Json.obj("_id" -> parseValueToJson(id)), data)
+  }
+
+  def insertOne(ns: Namespace, data: JsValue): Future[LastError] = {
+    Logger.debug(s"Inserting document")
+    val (dbName, collectionName) = ns
+    val db = connection(dbName)
+    val collection = db.collection[JSONCollection](collectionName)
+    collection.insert(data)
   }
 
 }

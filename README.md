@@ -70,9 +70,17 @@ If you use ObjectIds, surround the id with `ObjectId()`:
 
 ### Remove
 
-To delete one entry with a given `_id`, add the id to the route:
+To delete one entry with a given `_id`, use the same style as find one but use the DELETE method:
 
 `DELETE /myDatabase/users/ObjectId(528dcd062f79c2ff911e3434)`
+
+### Insert
+
+`curl -X POST -H "Content-Type: application/json" -d '{"firstName":John}' "http://localhost:9000/myDatabase/users"`
+
+### Update
+
+`curl -X PUT -H "Content-Type: application/json" -d '{"firstName":John}' "http://localhost:9000/myDatabase/users/ObjectId(528dcd062f79c2ff911e3434)"`
 
 
 Deployment

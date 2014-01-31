@@ -43,4 +43,12 @@ class Forwarder extends MongoFwdDelegate with CurrentApp with CorsHeaders {
   def remove(path: String) = Action { _ =>
     Results.BadRequest(Json.obj("err" -> "MongoDB REST service does not support DELETE"))
   }
+
+  def update(path: String) = Action { _ =>
+    Results.BadRequest(Json.obj("err" -> "MongoDB REST service does not support PUT"))
+  }
+
+  def insert(path: String) = Action { _ =>
+    Results.BadRequest(Json.obj("err" -> "MongoDB REST service does not support POST"))
+  }
 }
